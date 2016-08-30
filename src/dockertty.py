@@ -75,7 +75,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         """
         Set the terminal window size of the child pty.
 
-        Receive and decode message sent from gotty.js and set window size of pty.
+        Receive and decode message sent from dockertty.js and set window size of pty.
         The message format is: "{'rows': 10, 'columns': 20}"
         """
         data = json.loads(message)
@@ -216,6 +216,6 @@ if __name__ == '__main__':
     server.start(0)
 
     main_loop = tornado.ioloop.IOLoop.instance()
-    console_sched = tornado.ioloop.PeriodicCallback(TerminalSocketHandler.send_message, 100, io_loop=main_loop)
-    console_sched.start()
+    scheduler = tornado.ioloop.PeriodicCallback(TerminalSocketHandler.send_message, 100, io_loop=main_loop)
+    scheduler.start()
     main_loop.start()
