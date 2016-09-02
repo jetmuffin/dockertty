@@ -61,7 +61,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
             # and then set the stream to non-blocking mode.
             pty = PtyProcessUnicode.spawn(
                 ['docker', 'exec', '-ti', self.container_id, '/bin/sh', '-c',
-                 'echo $$ > /tmp/sh.pid.{} && [ -x /bin/bash ] && /bin/bash || /bin/sh ]'.format(self.uuid)])
+                 'echo $$ > /tmp/sh.pid.{} && [ -x /bin/bash ] && /bin/bash || /bin/sh'.format(self.uuid)])
             flags = fcntl(pty.fileobj, F_GETFL)
             fcntl(pty.fileobj, F_SETFL, flags | O_NONBLOCK)
 
