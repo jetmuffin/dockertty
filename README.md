@@ -4,86 +4,69 @@
 
 DockerTTY is a Web-based terminal emulator for docker containers.
 
+![screenshot](screenshot.gif)
+
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+DockerTTY is an agent to make it easier to connect to docker containers. You don't have to install `ssh-server` or other agent inside each container, or build special images. All you need to do is set it up on your server and visit it through your browser. 
 
 ### Prerequisities
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+- pip
+- ptyprocess
+- docker
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Stay what the step will be
+Firstly, clone the source code from github.
 
 ```
-Give the example
+$ git clone https://github.com/JetMuffin/dockertty.git
 ```
 
-And repeat
+Then, install dependency packages using pip.
 
 ```
-until finished
+$ cd dockertty
+$ sudo pip install -r requirement.txt
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+### Usage
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+Run `python src/dockertty.py` with options. 
 
 ```
-Give an example
+Usage: dockertty.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -p PORT, --port=PORT  Set port of dockertty listen to
+  -l LOG_PATH, --log-path=LOG_PATH
+                        Path to print log
 ```
 
-### And coding style tests
+By default, DockerTTY listen to port `21888` and output log to path `/var/log/dockertty.log`. 
 
-Explain what these tests test and why
+So if you use default options to run, you may need root privillege (use `sudo` before the command). 
+
+Then, open your browser, visit url below and enjoy yourself.
 
 ```
-Give an example
+http://127.0.0.1:<port>/terminal/<container_id>
 ```
 
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* Dropwizard - Bla bla bla
-* Maven - Maybe
-* Atom - ergaerga
+By the way, you can get the `container_id` by `docker ps`.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Issues and pull requests are wellcome!
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+Fork the [repository](https://github.com/JetMuffin/dockertty) on GitHub and send a pull request, or file an issue ticket at the [issue tracker](https://github.com/JetMuffin/dockertty/issues).
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **JetMuffin** - *Initial work* - [JetMuffin](https://www.jetmuffin.com)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+MIT License
