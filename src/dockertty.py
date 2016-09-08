@@ -159,7 +159,6 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         logger.warning("Invalid message type received: {}".format(message))
 
     def open(self, container_id):
-        self.container_id = container_id
         setattr(self, "container_id", container_id)
         setattr(self, "uuid", binascii.hexlify(os.urandom(20)).decode())
 
