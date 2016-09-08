@@ -1,3 +1,4 @@
+# coding=utf8
 import base64
 import json
 import logging
@@ -8,7 +9,7 @@ from optparse import OptionParser
 from os import O_NONBLOCK
 
 import binascii
-
+import sys
 import tornado.web
 import tornado.ioloop
 import tornado.websocket
@@ -34,13 +35,18 @@ def setup_logging(filename):
     logger.addHandler(console_handler)
 
 
+def static_path():
+    abs_dir = sys._MEIPASS if hasattr(sys, "_MEIPASS") else os.path.abspath(os.path.dirname(__file__))
+    return os.path.join(abs_dir, "static")
+
+
 class TerminalHandler(tornado.web.RequestHandler):
     """
     Handler for GET method of WebConsole page
     """
 
     def get(self, container_id):
-        self.render("static/terminal.html")
+        self.render(os.path.join(static_path(), "terminal.html"))
 
 
 class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
@@ -203,13 +209,12 @@ if __name__ == '__main__':
 
     setup_logging(options.log_path)
 
-    static_path = os.path.join(os.path.dirname(__file__), "static")
     app = tornado.web.Application(
         handlers=[
             (r'^/terminal/(.*)/ws', TerminalSocketHandler),
             (r'^/terminal/(.*)', TerminalHandler),
         ],
-        static_path=static_path
+        static_path=static_path()
     )
     server = tornado.httpserver.HTTPServer(app)
     server.bind(options.port)
