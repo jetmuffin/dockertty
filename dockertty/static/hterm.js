@@ -5366,7 +5366,7 @@ hterm.Frame.prototype.postMessage = function(name, argv) {
 /**
  * Show the UI for this frame.
  *
- * The iframe src is not loaded until this method is called.
+ * The iframe dockertty is not loaded until this method is called.
  */
 hterm.Frame.prototype.show = function() {
   var self = this;
@@ -9193,7 +9193,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
       'position: absolute;' +
       'width: 100%');
 
-  // Set the iframe src to # in FF.  Otherwise when the frame's
+  // Set the iframe dockertty to # in FF.  Otherwise when the frame's
   // load event fires in FF it clears out the content of the iframe.
   if ('mozInnerScreenX' in window)  // detect a FF only property
     this.iframe_.src = '#';
