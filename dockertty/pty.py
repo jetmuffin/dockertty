@@ -79,9 +79,11 @@ class PseudoTerminal(object):
         self.container = container
         self.raw = None
         self.uuid = binascii.hexlify(os.urandom(20)).decode()
+        self.isalive = True
 
         self.pipes = self._create_fd()
         self.pipe_in_r, self.pipe_in_w, self.pipe_out_r, self.pipe_out_w = self.pipes
+
         io.set_blocking(self.pipe_out_r, False)
 
     @staticmethod
@@ -183,7 +185,12 @@ class PseudoTerminal(object):
                 read_pumps = [p for p in pumps if not p.eof]
                 write_streams = [p.to_stream for p in pumps if p.to_stream.needs_write()]
 
-                read_ready, write_ready = io.select(read_pumps, write_streams, timeout=60)
+                try:
+                    read_ready, write_ready = io.select(read_pumps, write_streams, timeout=60)
+                except ValueError as e:
+                    self.isalive = False
+                    raise e
+
                 try:
                     for write_stream in write_ready:
                         write_stream.do_write()
@@ -196,10 +203,6 @@ class PseudoTerminal(object):
                 except SSLError as e:
                     if 'The operation did not complete' not in e.strerror:
                         raise e
-
-    def isalive(self):
-        # TODO(JetMuffin): Check the connection between pty and container is alive or not
-        return True
 
     def stop(self):
         for p in self.pipes:

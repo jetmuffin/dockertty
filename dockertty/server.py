@@ -105,7 +105,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
             for conn, pty in cls.clients.items():
                 try:
                     # check if pty is alive or not
-                    if not pty.isalive():
+                    if not pty.isalive:
                         conn.close()
                         return
 
@@ -176,7 +176,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         # close pseudo terminal and terminate subprocess
         if self in TerminalSocketHandler.clients:
             TerminalSocketHandler.clients.pop(self)
-            if hasattr(self, "pty") and self.pty.isalive():
+            if hasattr(self, "pty") and self.pty.isalive:
                 self.pty.stop()
 
 
