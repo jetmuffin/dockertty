@@ -206,7 +206,7 @@ class PseudoTerminal(object):
 
     def stop(self):
         self.container.exec_run(
-            cmd='/bin/sh -c "kill -1 $(cat /tmp/sh.pid.{}'.format(self.uuid)
+            cmd='/bin/sh -c "kill -1 $(cat /tmp/sh.pid.{})"'.format(self.uuid)
         )
 
         for p in self.pipes:

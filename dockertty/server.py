@@ -57,8 +57,15 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
 
     def start_pty(self, *args):
         if not self.container_id:
-            self.send_error_and_close("Error: container not found.")
+            self.send_error_and_close("Error: container id is required.")
             return
+
+        try:
+            docker_client.containers.get(self.container_id)
+        except Exception as e:
+            self.send_error_and_close("Error: {}".format(e))
+            return
+
         try:
             container = docker_client.containers.get(self.container_id)
 
@@ -177,6 +184,8 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         if self in TerminalSocketHandler.clients:
             TerminalSocketHandler.clients.pop(self)
             if hasattr(self, "pty"):
+                logger.info(
+                    "Socket closed, kill subprocess of container {}".format(self.container_id))
                 self.pty.stop()
 
 
