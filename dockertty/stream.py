@@ -122,7 +122,6 @@ class Stream(object):
                 if e.errno not in Stream.ERRNO_RECOVERABLE:
                     raise e
 
-
     def write(self, data):
         """
         Write `data` to the Stream. Not all data may be written right away.
@@ -383,8 +382,7 @@ class Pump(object):
         side does not have pending bytes to send.
         """
 
-        return (not self.wait_for_output or self.eof) and \
-                not (hasattr(self.to_stream, 'needs_write') and self.to_stream.needs_write())
+        return (not self.wait_for_output or self.eof) and not (hasattr(self.to_stream, 'needs_write') and self.to_stream.needs_write())
 
     def __repr__(self):
         return "{cls}(from={from_stream}, to={to_stream})".format(

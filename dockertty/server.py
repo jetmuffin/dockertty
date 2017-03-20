@@ -20,6 +20,7 @@ from pty import PseudoTerminal
 logger = None
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
+
 def setup_logging(filename):
     global logger
     logger = logging.getLogger(__name__)

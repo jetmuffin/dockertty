@@ -15,6 +15,7 @@ def is_fd_closed(fd):
     except OSError:
         return True
 
+
 class TestStream(object):
 
     def test_read_from_socket(self):
@@ -35,7 +36,6 @@ class TestStream(object):
             f.write(b'test')
             f.seek(0)
             expect(stream.read(32)).to(equal(b'test'))
-
 
     def test_read_returns_empty_string_at_eof(self):
         with tempfile.TemporaryFile() as f:
