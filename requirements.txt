@@ -1,4 +1,4 @@
-ptyprocess>=0.5.1
-tornado>=4.1
-docker-py>=1.7.1
+tornado>=4.4
+docker>=2.1.0
 pytest>=3.0.2
+expects>=0.8.0

@@ -3,24 +3,22 @@ import base64
 import json
 import logging
 import os
-from fcntl import fcntl, F_GETFL, F_SETFL
-from time import sleep
-from optparse import OptionParser
-from os import O_NONBLOCK
-
 import binascii
 import sys
+import docker
+
 import tornado.web
 import tornado.ioloop
 import tornado.websocket
 import tornado.httpserver
 import tornado.netutil
 import tornado.process
-from ptyprocess import PtyProcessUnicode
 
+from optparse import OptionParser
+from pty import PseudoTerminal
 
 logger = None
-
+docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
 def setup_logging(filename):
     global logger
@@ -62,17 +60,17 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
             self.send_error_and_close("Error: container not found.")
             return
         try:
+            container = docker_client.containers.get(self.container_id)
+
             # create a pseudo terminal of container by command:
             # `docker exec -ti <container_id> /bin/sh -c '[ -x /bin/bash ] && /bin/bash || /bin/sh'`
             # and then set the stream to non-blocking mode.
-            pty = PtyProcessUnicode.spawn(
-                ['docker', 'exec', '-ti', self.container_id, '/bin/sh', '-c',
-                 'echo $$ > /tmp/sh.pid.{} && [ -x /bin/bash ] && /bin/bash || /bin/sh'.format(self.uuid)])
-            flags = fcntl(pty.fileobj, F_GETFL)
-            fcntl(pty.fileobj, F_SETFL, flags | O_NONBLOCK)
+            pty = PseudoTerminal(docker_client, container)
+            pty.start()
 
             setattr(self, "pty", pty)
             TerminalSocketHandler.clients.update({self: pty})
+
             logger.info('Connect to console of container {}'.format(self.container_id))
         except Exception as e:
             self.send_error_and_close("Error: cannot start console: {}".format(e))
@@ -86,7 +84,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         """
         data = json.loads(message)
         if hasattr(self, "pty"):
-            self.pty.setwinsize(data['rows'], data['columns'])
+            self.pty.resize((data['rows'], data['columns']))
 
     def response(self, message_type, message_content):
         """
@@ -138,20 +136,6 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         if hasattr(self, "pty"):
             self.pty.write(message)
 
-    def kill_spawned_process(self):
-        """
-        Kill spawned process inside container.
-
-        If process of `docker exec` was killed, the spawned process inside container is
-        still running. So we should kill spawned process before kill `docker exec`.
-        """
-        p = PtyProcessUnicode.spawn(['docker', 'exec', self.container_id, '/bin/sh', '-c',
-                                     'kill -1  $(cat /tmp/sh.pid.{})'.format(self.uuid)])
-        # wait till complete execution of command
-        while p.isalive():
-            sleep(1)
-        p.close()
-
     def handle_invalid_message(self, message):
         """
         Handle invalid message
@@ -193,10 +177,7 @@ class TerminalSocketHandler(tornado.websocket.WebSocketHandler):
         if self in TerminalSocketHandler.clients:
             TerminalSocketHandler.clients.pop(self)
             if hasattr(self, "pty") and self.pty.isalive():
-                self.kill_spawned_process()
-                logger.info(
-                    "Socket closed, kill subprocess of container {} (pid {})".format(self.container_id, self.pty.pid))
-                self.pty.close()
+                self.pty.stop()
 
 
 if __name__ == '__main__':

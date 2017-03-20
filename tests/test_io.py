@@ -5,7 +5,7 @@ from io import StringIO
 
 import sys
 from expects import expect, equal, be_none, be_true, be_false
-from dockertty.io import Stream, Pump
+from dockertty.stream import Stream, Pump
 
 
 def is_fd_closed(fd):
