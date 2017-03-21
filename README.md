@@ -23,7 +23,7 @@ sudo docker run \
   jetmuffin/dockertty:latest
 ```
 
-Then visited `http://localhost:21888/terminal/<container_id>` to open a web-based terminal for container `container_id`.
+Then visit `http://localhost:21888/terminal/<container_id>` to open a web-based terminal for container(`container_id`).
 
 ### Prerequisities
 
