@@ -1,14 +1,29 @@
 # dockertty
 
 [![Build Status](https://api.travis-ci.org/JetMuffin/dockertty.svg?branch=master)](https://travis-ci.org/JetMuffin/dockertty)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jetmuffin/dockertty.svg)](https://hub.docker.com/r/jetmuffin/dockertty/)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/JetMuffin/dockertty/blob/master/LICENSE)
 
 DockerTTY is a Web-based terminal emulator for docker containers.
 
 ![screenshot](screenshot.gif)
 
-## Getting Started
-
 DockerTTY is an agent to make it easier to connect to docker containers. You don't have to install `ssh-server` or other agent inside each container, or build special images. All you need to do is set it up on your server and visit it through your browser. 
+
+## Quick Started
+
+We have a Docker image which includes everything you need to run dockertty. You can run a single dockertty container to connect with all containers on the machine. Simply run:
+
+```
+sudo docker run \
+  --volume=/var/run/docker.sock:/var/run/docker.sock:ro \
+  --publish=21888:21888 \
+  --detach=true \
+  --name=dockertty \
+  jetmuffin/dockertty:latest
+```
+
+Then visited `http://localhost:21888/terminal/<container_id>` to open a web-based terminal for container `container_id`.
 
 ### Prerequisities
 
@@ -65,7 +80,7 @@ Fork the [repository](https://github.com/JetMuffin/dockertty) on GitHub and send
 
 ## Authors
 
-* **JetMuffin** - *Initial work* - [JetMuffin](https://www.jetmuffin.com)
+* **JetMuffin** - *Initial work* - [JetMuffin](http://blog.jetmuffin.com)
 
 ## License
 
